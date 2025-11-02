@@ -4,7 +4,7 @@ pipeline {
     environment {
         ACCOUNT_ID = '623592712233'
         AWS_REGION = 'ap-south-1'           // Your AWS region
-        REPO_NAME = 'myapp/repo'            // ECR repo name (e.g. myapp)
+        REPO_NAME = 'my-app/repo'            // ECR repo name (e.g. myapp)
         IMAGE_TAG = 'latest'
     }
 
@@ -78,3 +78,4 @@ pipeline {
         }
     }
 }
+
