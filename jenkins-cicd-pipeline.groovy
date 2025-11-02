@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         ACCOUNT_ID = '623592712233'
-		AWS_REGION = 'ap-south-1'            // Change your AWS region if needed
-        REPO_NAME = 'myapp/repo'             // Your ECR repository name
+        AWS_REGION = 'ap-south-1'           // Your AWS region
+        REPO_NAME = 'myapp/repo'            // ECR repo name (e.g. myapp)
         IMAGE_TAG = 'latest'
     }
 
@@ -31,10 +31,10 @@ pipeline {
             steps {
                 script {
                     echo "Logging in to AWS ECR..."
-                   sh """
-					aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${REPO_NAME}
-					"""
-
+                    sh """
+                        aws ecr get-login-password --region ${AWS_REGION} | \
+                        docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                    """
                 }
             }
         }
@@ -43,7 +43,6 @@ pipeline {
             steps {
                 script {
                     echo "Pushing image to ECR..."
-                    ACCOUNT_ID = sh(script: "aws sts get-caller-identity --query Account --output text", returnStdout: true).trim()
                     ECR_URL = "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}"
 
                     sh "docker tag ${REPO_NAME}:${IMAGE_TAG} ${ECR_URL}:${IMAGE_TAG}"
@@ -56,12 +55,11 @@ pipeline {
             steps {
                 script {
                     echo "Deploying container on EC2..."
-                    ACCOUNT_ID = sh(script: "aws sts get-caller-identity --query Account --output text", returnStdout: true).trim()
                     ECR_URL = "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPO_NAME}"
 
                     sh "docker pull ${ECR_URL}:${IMAGE_TAG}"
 
-                    // Stop old container if exists
+                    // Stop old container if running
                     sh "docker ps -q --filter 'name=myapp-container' | grep -q . && docker stop myapp-container && docker rm myapp-container || true"
 
                     // Run new container
@@ -80,5 +78,3 @@ pipeline {
         }
     }
 }
-
-
