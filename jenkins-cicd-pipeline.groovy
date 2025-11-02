@@ -32,7 +32,7 @@ pipeline {
                 script {
                     echo "Logging in to AWS ECR..."
                    sh """
-					aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO}
+					aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${REPO_NAME}
 					"""
 
                 }
@@ -80,4 +80,5 @@ pipeline {
         }
     }
 }
+
 
