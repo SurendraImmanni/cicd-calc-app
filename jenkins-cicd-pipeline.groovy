@@ -63,7 +63,7 @@ pipeline {
                     sh "docker ps -q --filter 'name=myapp-container' | grep -q . && docker stop myapp-container && docker rm myapp-container || true"
 
                     // Run new container
-                    sh "docker run -d --name myapp-container -p 5050:8080 ${ECR_URL}:${IMAGE_TAG}"
+                    sh "docker run -d --name myappcalc -p 5050:8080 ${ECR_URL}:${IMAGE_TAG}"
                 }
             }
         }
@@ -78,6 +78,7 @@ pipeline {
         }
     }
 }
+
 
 
 
